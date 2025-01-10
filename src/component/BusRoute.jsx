@@ -1,19 +1,29 @@
 import React, { useState } from "react";
 import BusRouteCard from "./BusRouteCard";
+import RouteDetails from "./RouteDetails";  
 import "./BusRouteCard.css";
-import data from "./InitialData.json"
-
+import data from "./InitialData.json";
 
 const BusRoute = () => {
-  const [routes, setRoutes] = useState(data.routes)
+  const [routes, setRoutes] = useState(data.routes);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [currentRoute, setCurrentRoute] = useState(null);
+  const [showDetails, setShowDetails] = useState(false); // Added for details view
   const [formData, setFormData] = useState({
     busNo: "",
     totalKm: "",
     stops: "",
   });
+
+  const handleCardClick = (route) => {
+    setCurrentRoute(route);
+    setShowDetails(true);
+  };
+
+  const handleCloseDetails = () => {
+    setShowDetails(false);
+  };
 
   const handleEdit = (route) => {
     setCurrentRoute(route);
@@ -29,11 +39,7 @@ const BusRoute = () => {
     setRoutes(routes.filter((r) => r !== route));
   };
 
-  const handleAddNew = () => {
-    setCurrentRoute(null);
-    setFormData({ busNo: "", totalKm: "", stops: "" });
-    setShowForm(true);
-  };
+ 
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -70,33 +76,36 @@ const BusRoute = () => {
     <div className="app">
       <header className="app-header">
         <input
+          className="search-bar"
           type="text"
           placeholder="Search Routes..."
-          className="search-input"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button className="add-new-btn" onClick={handleAddNew}>
-          + Add New
-        </button>
+        <button className="add-button" onClick={() => setShowForm(true)}>+ Add New</button>
       </header>
 
       <div className="bus-route-container">
-        {filteredRoutes.length > 0 ? (
-          filteredRoutes.map((route, index) => (
+        {routes
+          .filter((route) =>
+            route.busNo.toLowerCase().includes(search.toLowerCase())
+          )
+          .map((route, index) => (
             <BusRouteCard
               key={index}
               route={route}
               onEdit={() => handleEdit(route)}
               onDelete={() => handleDelete(route)}
+              onClick={() => handleCardClick(route)} // Click to view details
             />
-          ))
-        ) : (
-          <p>No buses found for "{search}"</p>
-        )}
+          ))}
       </div>
 
-      {showForm && (
+      {showDetails && (
+        <RouteDetails route={currentRoute} onClose={handleCloseDetails} />
+      )}
+
+{showForm && (
         <div className="form-overlay">
           <div className="edit-form">
             <h2>{currentRoute ? "Edit Route" : "Add New Route"}</h2>

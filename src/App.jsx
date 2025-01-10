@@ -1,13 +1,9 @@
-
-
-
-
 import React, { useState } from "react";
 import DriversTab from "./component/DriversTab";
 import VehiclesTab from "./component/VehiclesTab";
 import { BrowserRouter } from "react-router-dom";
 import BusRoute from "./component/BusRoute"
-import "./App.css";
+import "./App.css";   
 
 const App = () => {
   const [activeTab, setActiveTab] = useState("drivers");
